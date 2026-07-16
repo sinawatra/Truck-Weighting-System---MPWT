@@ -9,10 +9,22 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+     public function up(): void
     {
         Schema::create('stations', function (Blueprint $table) {
             $table->id();
+            $table-> string("station_code")->unique();
+            $table->string('name');
+            $table->string('location');
+            $table->decimal('latitude', 10, 7)->nullable();
+            $table->decimal('longitude', 10, 7)->nullable();
+            $table->string('machine_code')->nullable();
+            $table->enum('status', [
+                'active',
+                'inactive',
+                'maintenance'
+            ])->default('active');
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }
