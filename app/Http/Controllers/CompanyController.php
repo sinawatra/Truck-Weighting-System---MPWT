@@ -13,6 +13,9 @@ class CompanyController extends Controller
     public function index()
     {
         //
+        return response()->json([
+            "data" => Company::all()
+        ]);
     }
 
     /**
@@ -29,6 +32,15 @@ class CompanyController extends Controller
     public function store(Request $request)
     {
         //
+        $company = Company::create([
+            'name' => $request->name,
+            'phone' => $request->phone,
+            'address' => $request->address
+        ]);
+        return response()->json([
+            "message" => "Company created successfully",
+            "data" => $company
+        ], 201);    
     }
 
     /**
@@ -53,6 +65,8 @@ class CompanyController extends Controller
     public function update(Request $request, Company $company)
     {
         //
+        $company->update($request->all());
+
     }
 
     /**
@@ -61,5 +75,9 @@ class CompanyController extends Controller
     public function destroy(Company $company)
     {
         //
+        Company::destroy($company->id);
+        return response()->json([   
+            "message" => "Company deleted successfully"
+        ]);
     }
 }

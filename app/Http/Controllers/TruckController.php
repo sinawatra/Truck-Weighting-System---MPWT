@@ -75,8 +75,8 @@ class TruckController extends Controller
     {
         $truck = Truck::findOrFail($id);
         if (!$truck) {
-                return response()->json([
-                    "message" => "Truck not found"
+            return response()->json([
+                "message" => "Truck not found"
                 ], 404);
         }
 
