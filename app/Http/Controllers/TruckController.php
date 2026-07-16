@@ -104,4 +104,40 @@ class TruckController extends Controller
             "message" => "Truck deleted successfully"
         ]);
     }
+
+    public function search(Request $request)
+    {
+        $request->validate([
+            'plate_number' => 'sometimes|string',
+            'driver_name' => 'sometimes|string',
+            'car_model' => 'sometimes|string',
+            'weight' => 'sometimes|numeric',
+        ]);
+
+        $query = Truck::with('company');
+
+        if ($request->filled('plate_number')) {
+            $query->where('plate_number', 'like', '%' . $request->input('plate_number') . '%');
+        }
+
+        if ($request->filled('driver_name')) {
+            $query->where('driver_name', 'like', '%' . $request->input('driver_name') . '%');
+        }
+
+        if ($request->filled('car_model')) {
+            $query->where('car_model', 'like', '%' . $request->input('car_model') . '%');
+        }
+
+        if ($request->filled('weight')) {
+            $query->where('weight', $request->input('weight'));
+        }
+
+        $trucks = $query->get();
+
+        return response()->json([
+            'message' => 'Search completed successfully',
+            'count' => $trucks->count(),
+            'data' => $trucks,
+        ]);
+    }
 }
