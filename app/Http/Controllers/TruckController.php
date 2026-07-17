@@ -37,7 +37,7 @@ class TruckController extends Controller
                 'car_model' => $request->car_model,
                 'weight' => $request->weight,
         ]);
-        return response()->json([
+    return response()->json([
                 "message" => "Truck created successfully",
                 "data" => $truck
         ], 201);

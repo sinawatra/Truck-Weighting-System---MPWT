@@ -13,6 +13,7 @@ class StationController extends Controller
     public function index()
     {
         //
+        return response() -> json([ "data" =>  Station::all()]);
     }
 
     /**
@@ -29,6 +30,21 @@ class StationController extends Controller
     public function store(Request $request)
     {
         //
+        $station = Station::create([
+            "station_code" => $request->station_code,
+            "name" => $request-> name,
+            "location" => $request -> location,
+            'latitude'=> $request -> latitude,
+            'longitude'=> $request -> longtitute,
+            'machine_code'=> $request -> machine_code,
+            'status' => $request -> status,
+            'description' => $request -> decription
+        ]);
+
+         return response()->json([
+                "message" => "Station created successfully",
+                "data" => $station
+        ], 201);
     }
 
     /**
@@ -37,6 +53,10 @@ class StationController extends Controller
     public function show(Station $station)
     {
         //
+         return response()->json([
+            "data" => Truck::find($id)
+        ]);
+
     }
 
     /**
@@ -44,22 +64,47 @@ class StationController extends Controller
      */
     public function edit(Station $station)
     {
-        //
-    }
+         }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Station $station)
+    public function update(Request $request,  $id)
     {
         //
+        $station = Station::findOrFail($id);
+        if (!$station) {
+            return response()->json([
+                "message" => "station not found"
+                ], 404);
+        }
+
+        $station->update([
+            "station_code" => $request->station_code,
+            "name" => $request-> name,
+            "location" => $request -> location,
+            'latitude'=> $request -> latitude,
+            'longitude'=> $request -> longtitute,
+            'machine_code'=> $request -> machine_code,
+            'status' => $request -> status,
+            'description' => $request -> decription
+        ]);
+
+        return response()->json([
+            "message" => "Station updated successfully",
+            "data" => $station
+        ]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Station $station)
+      public function destroy(Station $station)
     {
         //
+        Station::destroy($truck->id);
+        return response()->json([   
+            "message" => "Station deleted successfully"
+        ]);
     }
 }
