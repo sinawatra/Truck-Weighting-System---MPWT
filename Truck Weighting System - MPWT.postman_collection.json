@@ -235,6 +235,39 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "Update Company",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"Watra Logistics Co., Ltd.\",\r\n    \"phone\": \"+85512345678\",\r\n    \"address\": \"No. 123, Monivong Blvd, Phnom Penh, Cambodia\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/companies/4",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "companies",
+                "4"
+              ]
+            }
+          },
+          "response": []
         }
       ]
     },
@@ -385,7 +418,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"plate_number\": \"2CH: 9990\",\r\n    \"driver_name\": \"Sinawatra Rith\",\r\n    \"car_model\": \"Lambo\",\r\n    \"weight\": \"1500\"\r\n}",
+              "raw": "{\r\n    \"plate_number\": \"2CH: 9990\",\r\n    \"driver_name\": \"Critiano Ronaldo\",\r\n    \"car_model\": \"Lambo Hurrican\",\r\n    \"weight\": \"1500\",\r\n    \"company_id\" : \"\"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -413,6 +446,147 @@
       ]
     },
     {
+      "name": "Weight Records",
+      "item": [
+        {
+          "name": "Get weight-records",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/weight-records",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "weight-records"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create weight-records",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"truck_id\" : \"1\",\r\n\"station_id\" : \"6\",\r\n\"weight\" : \"\",\r\n\"weight_type\" : \"\"\r\n\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/weight-records",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "weight-records"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get weight-records By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/companies/id",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "companies",
+                "id"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete weight-records By Id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/weight-records/id",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "weight-records",
+                "id"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Weight records",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"truck_id\": \"1\",\r\n    \"station_id\": \"6\",\r\n    \"weight\": \"10\",\r\n    \"weight_type\": \"loaded\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://127.0.0.1:8000/api/weight-records/1",
+              "protocol": "http",
+              "host": [
+                "127",
+                "0",
+                "0",
+                "1"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "weight-records",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
       "name": "Check Health",
       "request": {
         "method": "GET",
@@ -431,6 +605,14 @@
             "up"
           ]
         }
+      },
+      "response": []
+    },
+    {
+      "name": "Testing",
+      "request": {
+        "method": "GET",
+        "header": []
       },
       "response": []
     }
