@@ -50,11 +50,11 @@ class StationController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Station $station)
+    public function show(Station $station, $id)
     {
         //
          return response()->json([
-            "data" => Truck::find($id)
+            "data" => Station::find($id)
         ]);
 
     }
@@ -102,7 +102,7 @@ class StationController extends Controller
       public function destroy(Station $station)
     {
         //
-        Station::destroy($truck->id);
+        Station::destroy($station->id);
         return response()->json([   
             "message" => "Station deleted successfully"
         ]);
