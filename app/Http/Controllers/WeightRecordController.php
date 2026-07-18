@@ -13,6 +13,9 @@ class WeightRecordController extends Controller
     public function index()
     {
         //
+        return response()->json([
+            "data" => WeightRecord::all()
+        ]);
     }
 
     /**
@@ -29,6 +32,16 @@ class WeightRecordController extends Controller
     public function store(Request $request)
     {
         //
+        $weightRecord = WeightRecord::create([
+            'truck_id' => $request->truck_id,
+            'station_id' => $request->station_id,
+            'weight' => $request->weight,
+            'weight_type' => $request->weight_type
+        ]);
+        return response()->json([
+            "message" => "Weight record created successfully",
+            "data" => $weightRecord
+        ], 201);
     }
 
     /**
@@ -53,6 +66,11 @@ class WeightRecordController extends Controller
     public function update(Request $request, WeightRecord $weightRecord)
     {
         //
+        $weightRecord->update($request->all());
+        return response()->json([
+            "message" => "Weight record updated successfully",
+            "data" => $weightRecord
+        ]);
     }
 
     /**
@@ -61,5 +79,9 @@ class WeightRecordController extends Controller
     public function destroy(WeightRecord $weightRecord)
     {
         //
+        WeightRecord::destroy($weightRecord->id);
+        return response()->json([
+            "message" => "Weight record deleted successfully"
+        ]);
     }
 }

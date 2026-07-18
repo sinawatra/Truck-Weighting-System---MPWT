@@ -11,6 +11,7 @@ Route::get('/trucks/search', [TruckController::class, 'search'])->name('trucks.s
 Route::apiResource('trucks', TruckController::class);
 Route::apiResource('stations', StationController::class);
 Route::apiResource('companies', CompanyController::class);
+Route::apiResource('weight-records', \App\Http\Controllers\WeightRecordController::class);
 
 
 Route::get('/user', function (Request $request) {

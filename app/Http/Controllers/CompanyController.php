@@ -66,6 +66,10 @@ class CompanyController extends Controller
     {
         //
         $company->update($request->all());
+        return response()->json([
+            "message" => "Company updated successfully",
+            "data" => $company
+        ]);
 
     }
 

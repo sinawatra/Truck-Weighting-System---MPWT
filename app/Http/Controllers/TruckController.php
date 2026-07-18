@@ -32,6 +32,7 @@ class TruckController extends Controller
     {
         //
         $truck = Truck::create([
+                'company_id' => $request->company_id,
                 'plate_number' => $request->plate_number,
                 'driver_name' => $request->driver_name,
                 'car_model' => $request->car_model,
