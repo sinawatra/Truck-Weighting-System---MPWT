@@ -4,17 +4,30 @@ namespace App\Http\Controllers;
 
 use App\Models\WeightRecord;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class WeightRecordController extends Controller
 {
+    /**
+     * Cache lifetime for read endpoints, in seconds. Writes flush the tag,
+     * so this is only a safety-net expiry.
+     */
+    private const CACHE_TTL = 3600;
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         //
+        $records = Cache::tags('weight-records')->remember(
+            'weight-records.index',
+            self::CACHE_TTL,
+            fn () => WeightRecord::all()
+        );
+
         return response()->json([
-            "data" => WeightRecord::all()
+            "data" => $records
         ]);
     }
 
@@ -38,6 +51,8 @@ class WeightRecordController extends Controller
             'weight' => $request->weight,
             'weight_type' => $request->weight_type
         ]);
+        Cache::tags('weight-records')->flush();
+
         return response()->json([
             "message" => "Weight record created successfully",
             "data" => $weightRecord
@@ -67,6 +82,9 @@ class WeightRecordController extends Controller
     {
         //
         $weightRecord->update($request->all());
+
+        Cache::tags('weight-records')->flush();
+
         return response()->json([
             "message" => "Weight record updated successfully",
             "data" => $weightRecord
@@ -80,6 +98,9 @@ class WeightRecordController extends Controller
     {
         //
         WeightRecord::destroy($weightRecord->id);
+
+        Cache::tags('weight-records')->flush();
+
         return response()->json([
             "message" => "Weight record deleted successfully"
         ]);

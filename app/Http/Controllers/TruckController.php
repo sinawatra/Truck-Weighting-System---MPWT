@@ -4,17 +4,29 @@ namespace App\Http\Controllers;
 
 use App\Models\Truck;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class TruckController extends Controller
 {
+    /**
+     * Cache lifetime for read endpoints, in seconds. Writes flush the tag,
+     * so this is only a safety-net expiry.
+     */
+    private const CACHE_TTL = 3600;
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         //
-        return response() -> json([
-            "data" =>  Truck::all()]);
+        $trucks = Cache::tags('trucks')->remember(
+            'trucks.index',
+            self::CACHE_TTL,
+            fn () => Truck::all()
+        );
+
+        return response()->json(["data" => $trucks]);
     }
 
     /**
@@ -38,11 +50,13 @@ class TruckController extends Controller
                 'car_model' => $request->car_model,
                 'weight' => $request->weight,
         ]);
+        Cache::tags('trucks')->flush();
+
     return response()->json([
                 "message" => "Truck created successfully",
                 "data" => $truck
         ], 201);
-            
+
     }
 
     //     public function store(Request $request)
@@ -57,9 +71,13 @@ class TruckController extends Controller
      */
     public function show(string $id)
     {
-        return response()->json([
-            "data" => Truck::find($id)
-        ]);
+        $truck = Cache::tags('trucks')->remember(
+            "trucks.show.{$id}",
+            self::CACHE_TTL,
+            fn () => Truck::find($id)
+        );
+
+        return response()->json(["data" => $truck]);
     }
     /**
      * Show the form for editing the specified resource.
@@ -88,6 +106,8 @@ class TruckController extends Controller
             'weight' => $request->weight,
         ]);
 
+        Cache::tags('trucks')->flush();
+
         return response()->json([
             "message" => "Truck updated successfully",
             "data" => $truck
@@ -101,7 +121,10 @@ class TruckController extends Controller
     {
         //
         Truck::destroy($truck->id);
-        return response()->json([   
+
+        Cache::tags('trucks')->flush();
+
+        return response()->json([
             "message" => "Truck deleted successfully"
         ]);
     }
@@ -115,25 +138,34 @@ class TruckController extends Controller
             'weight' => 'sometimes|numeric',
         ]);
 
-        $query = Truck::with('company');
+        $filters = $request->only(['plate_number', 'driver_name', 'car_model', 'weight']);
+        $cacheKey = 'trucks.search.' . md5(json_encode($filters));
 
-        if ($request->filled('plate_number')) {
-            $query->where('plate_number', 'like', '%' . $request->input('plate_number') . '%');
-        }
+        $trucks = Cache::tags('trucks')->remember(
+            $cacheKey,
+            self::CACHE_TTL,
+            function () use ($request) {
+                $query = Truck::with('company');
 
-        if ($request->filled('driver_name')) {
-            $query->where('driver_name', 'like', '%' . $request->input('driver_name') . '%');
-        }
+                if ($request->filled('plate_number')) {
+                    $query->where('plate_number', 'like', '%' . $request->input('plate_number') . '%');
+                }
 
-        if ($request->filled('car_model')) {
-            $query->where('car_model', 'like', '%' . $request->input('car_model') . '%');
-        }
+                if ($request->filled('driver_name')) {
+                    $query->where('driver_name', 'like', '%' . $request->input('driver_name') . '%');
+                }
 
-        if ($request->filled('weight')) {
-            $query->where('weight', $request->input('weight'));
-        }
+                if ($request->filled('car_model')) {
+                    $query->where('car_model', 'like', '%' . $request->input('car_model') . '%');
+                }
 
-        $trucks = $query->get();
+                if ($request->filled('weight')) {
+                    $query->where('weight', $request->input('weight'));
+                }
+
+                return $query->get();
+            }
+        );
 
         return response()->json([
             'message' => 'Search completed successfully',

@@ -4,17 +4,30 @@ namespace App\Http\Controllers;
 
 use App\Models\Company;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class CompanyController extends Controller
 {
+    /**
+     * Cache lifetime for read endpoints, in seconds. Writes flush the tag,
+     * so this is only a safety-net expiry.
+     */
+    private const CACHE_TTL = 3600;
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         //
+        $companies = Cache::tags('companies')->remember(
+            'companies.index',
+            self::CACHE_TTL,
+            fn () => Company::all()
+        );
+
         return response()->json([
-            "data" => Company::all()
+            "data" => $companies
         ]);
     }
 
@@ -37,10 +50,12 @@ class CompanyController extends Controller
             'phone' => $request->phone,
             'address' => $request->address
         ]);
+        Cache::tags('companies')->flush();
+
         return response()->json([
             "message" => "Company created successfully",
             "data" => $company
-        ], 201);    
+        ], 201);
     }
 
     /**
@@ -66,6 +81,9 @@ class CompanyController extends Controller
     {
         //
         $company->update($request->all());
+
+        Cache::tags('companies')->flush();
+
         return response()->json([
             "message" => "Company updated successfully",
             "data" => $company
@@ -80,7 +98,10 @@ class CompanyController extends Controller
     {
         //
         Company::destroy($company->id);
-        return response()->json([   
+
+        Cache::tags('companies')->flush();
+
+        return response()->json([
             "message" => "Company deleted successfully"
         ]);
     }

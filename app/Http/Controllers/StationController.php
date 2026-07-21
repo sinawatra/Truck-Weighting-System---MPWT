@@ -4,16 +4,29 @@ namespace App\Http\Controllers;
 
 use App\Models\Station;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class StationController extends Controller
 {
+    /**
+     * Cache lifetime for read endpoints, in seconds. Writes flush the tag,
+     * so this is only a safety-net expiry.
+     */
+    private const CACHE_TTL = 3600;
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         //
-        return response() -> json([ "data" =>  Station::all()]);
+        $stations = Cache::tags('stations')->remember(
+            'stations.index',
+            self::CACHE_TTL,
+            fn () => Station::all()
+        );
+
+        return response()->json(["data" => $stations]);
     }
 
     /**
@@ -41,6 +54,8 @@ class StationController extends Controller
             'description' => $request -> decription
         ]);
 
+        Cache::tags('stations')->flush();
+
          return response()->json([
                 "message" => "Station created successfully",
                 "data" => $station
@@ -53,8 +68,14 @@ class StationController extends Controller
     public function show(Station $station, $id)
     {
         //
+        $found = Cache::tags('stations')->remember(
+            "stations.show.{$id}",
+            self::CACHE_TTL,
+            fn () => Station::find($id)
+        );
+
          return response()->json([
-            "data" => Station::find($id)
+            "data" => $found
         ]);
 
     }
@@ -90,6 +111,8 @@ class StationController extends Controller
             'description' => $request -> decription
         ]);
 
+        Cache::tags('stations')->flush();
+
         return response()->json([
             "message" => "Station updated successfully",
             "data" => $station
@@ -103,7 +126,10 @@ class StationController extends Controller
     {
         //
         Station::destroy($station->id);
-        return response()->json([   
+
+        Cache::tags('stations')->flush();
+
+        return response()->json([
             "message" => "Station deleted successfully"
         ]);
     }
